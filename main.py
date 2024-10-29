@@ -40,6 +40,23 @@ def letters_frequency(file_path):
 
     return frequency
 
+# Computes all (i, i - 1) bigrams. There might be beter to compute (2i, 2i + 1) bigrams. 
+def bigram_frequency(file_path):
+    frequency = defaultdict(int)
+
+    text_length = 0
+    with open(file_path, mode="rt", encoding="utf-8") as file:
+        text = file.read()
+        text_length = len(text)
+        
+        for i in range(1, text_length):
+                frequency[text[i-1] + text[i]] += 1
+    
+    for k in frequency:
+        frequency[k] = frequency[k] / (text_length - 1)
+
+    return frequency
+
 def main(epsilon = pow(10, -12), precision = 12):
     file_path = "text_preparation/out_text.txt"
     
@@ -50,6 +67,21 @@ def main(epsilon = pow(10, -12), precision = 12):
     sum = 0
     for k in fletters:
         sum += fletters[k]
+
+    # small test for: SUM f_i ~ 1.0
+    if sum < 1.0 - epsilon or sum > 1.0 + epsilon: raise ValueError(f"sum of all letters frequency should be equal to 1.0, but it is: {sum}")
+
+
+    print("")
+
+
+    fbigrams = bigram_frequency(file_path=file_path)
+    for k in fbigrams:
+        print(f"{k}: {fbigrams[k]:0.{precision}f}")
+
+    sum = 0
+    for k in fbigrams:
+        sum += fbigrams[k]
 
     # small test for: SUM f_i ~ 1.0
     if sum < 1.0 - epsilon or sum > 1.0 + epsilon: raise ValueError(f"sum of all letters frequency should be equal to 1.0, but it is: {sum}")
