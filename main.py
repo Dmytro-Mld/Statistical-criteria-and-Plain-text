@@ -12,7 +12,7 @@ for i, l in enumerate(__UKR_ALPHA_LOWER__):
     encode_helper[l] = i
 
 # Return array of indexes of leters in a given text
-def encode(text):
+def encode(text: str) -> list[int]:
     result = []
     for l in text:
         result.append(encode_helper[l])
@@ -20,14 +20,14 @@ def encode(text):
     return result
 
 # Return leter at index
-def decode(indexes):
+def decode(indexes: list[int]) -> str:
     result = ""
     for i in indexes:
         result += __UKR_ALPHA_LOWER__[i]
 
     return result
 
-def letters_frequency(file_path):
+def letters_frequency(file_path: str) -> defaultdict[int]:
     frequency = defaultdict(int)
 
     text_length = 0
@@ -43,7 +43,7 @@ def letters_frequency(file_path):
     return frequency
 
 # Computes all (i, i - 1) bigrams. There might be beter to compute (2i, 2i + 1) bigrams. 
-def bigram_frequency(file_path):
+def bigram_frequency(file_path: str) -> defaultdict[int]:
     frequency = defaultdict(int)
 
     text_length = 0
@@ -59,7 +59,7 @@ def bigram_frequency(file_path):
 
     return frequency
 
-def vigener_distortion(text: str, key: list[int]):
+def vigener_distortion(text: str, key: list[int]) -> str:
     r = len(key)
     indexes = encode(text=text)
 
@@ -97,11 +97,14 @@ def main(epsilon = pow(10, -12), precision = 12):
     # small test for: SUM f_i ~ 1.0
     if sum < 1.0 - epsilon or sum > 1.0 + epsilon: raise ValueError(f"sum of all letters frequency should be equal to 1.0, but it is: {sum}")
 
+    print("")
     some_text = "тахлопецьпочувавсятакимображенимщонезвернувнацежодноїувагиідалінарікавіякщобтвійтато"
-    
+    print(some_text)
+
     for i in [1, 5, 10]:
         key = [random.randint(0, __MODULE__ - 1) for _ in range(i)]
         dtext = vigener_distortion(text=some_text, key=key)
+        print(dtext)
 
 if __name__ == "__main__":
     main()
