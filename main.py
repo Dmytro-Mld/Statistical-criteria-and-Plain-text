@@ -1,8 +1,10 @@
 import os
+import random
 from collections import defaultdict
 
 # ukr_alpha = "АБВГДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгдеєжзиіїйклмнопрстуфхцчшщьюя"
 ukr_alpha_lower = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя"
+__MODULE__ = len(ukr_alpha_lower)
 
 
 encode_helper = {}
@@ -57,6 +59,15 @@ def bigram_frequency(file_path):
 
     return frequency
 
+def vigener_distortion(text: str, key: list[int]):
+    r = len(key)
+    indexes = encode(text=text)
+
+    for i in range(len(indexes)):
+       indexes[i] = (indexes[i] + key[i % r]) % __MODULE__
+    
+    return decode(indexes)
+
 def main(epsilon = pow(10, -12), precision = 12):
     file_path = "text_preparation/out_text.txt"
     
@@ -85,6 +96,12 @@ def main(epsilon = pow(10, -12), precision = 12):
 
     # small test for: SUM f_i ~ 1.0
     if sum < 1.0 - epsilon or sum > 1.0 + epsilon: raise ValueError(f"sum of all letters frequency should be equal to 1.0, but it is: {sum}")
+
+    some_text = "тахлопецьпочувавсятакимображенимщонезвернувнацежодноїувагиідалінарікавіякщобтвійтато"
+    
+    for i in [1, 5, 10]:
+        key = [random.randint(0, __MODULE__ - 1) for _ in range(i)]
+        dtext = vigener_distortion(text=some_text, key=key)
 
 if __name__ == "__main__":
     main()
