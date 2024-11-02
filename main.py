@@ -3,12 +3,12 @@ import random
 from collections import defaultdict
 
 # ukr_alpha = "АБВГДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгдеєжзиіїйклмнопрстуфхцчшщьюя"
-ukr_alpha_lower = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя"
-__MODULE__ = len(ukr_alpha_lower)
+__UKR_ALPHA_LOWER__ = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя"
+__MODULE__ = len(__UKR_ALPHA_LOWER__)
 
 
 encode_helper = {}
-for i, l in enumerate(ukr_alpha_lower):
+for i, l in enumerate(__UKR_ALPHA_LOWER__):
     encode_helper[l] = i
 
 # Return array of indexes of leters in a given text
@@ -23,7 +23,7 @@ def encode(text):
 def decode(indexes):
     result = ""
     for i in indexes:
-        result += ukr_alpha_lower[i]
+        result += __UKR_ALPHA_LOWER__[i]
 
     return result
 
