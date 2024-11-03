@@ -118,6 +118,20 @@ def random_uniform_text(size: int, l: int) -> str:
     
     return decode_l_ary(indexes=res, l=l)
 
+def random_nonuniform_text(size: int, l: int) -> str:
+    size = size // l # because any l-gram gives l symbols instead of 1
+
+    mod_ = pow(__MODULE__, 2)
+    s = []
+
+    for i in range(2):
+        s.append(random.randint(0, mod_))
+    
+    for i in range(size - 2):
+        s.append((s[i] + s[i + 1]) % mod_)
+
+    return decode_l_ary(indexes=s, l=l)
+
 def main(epsilon = pow(10, -12), precision = 12):
     file_path = "text_preparation/out_text.txt"
     
@@ -168,6 +182,8 @@ def main(epsilon = pow(10, -12), precision = 12):
 
     print(random_uniform_text(size=100, l=1))
     print(random_uniform_text(size=100, l=2))
+    print(random_nonuniform_text(size=100, l=1))
+    print(random_nonuniform_text(size=100, l=2))
 
 if __name__ == "__main__":
     main()
