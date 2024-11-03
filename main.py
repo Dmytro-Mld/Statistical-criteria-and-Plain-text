@@ -97,6 +97,16 @@ def vigener_distortion(text: str, key: list[int]) -> str:
     
     return decode(indexes)
 
+# dict  = {"a": int, "b": int}
+def affine_distortion(text: str, key: dict[str: int], l: int) -> str:
+    mod_ = pow(__MODULE__, l)
+
+    indexes = encode_l_ary(text=text, l=l)
+    for i, ind in enumerate(indexes):
+        indexes[i] = (key["a"] * ind + key["b"]) % mod_
+    
+    return decode_l_ary(indexes, l=l)
+
 def main(epsilon = pow(10, -12), precision = 12):
     file_path = "text_preparation/out_text.txt"
     
@@ -134,6 +144,16 @@ def main(epsilon = pow(10, -12), precision = 12):
         key = [random.randint(0, __MODULE__ - 1) for _ in range(i)]
         dtext = vigener_distortion(text=some_text, key=key)
         print(dtext)
+    
+    print()
+
+    for l in [1, 2]:
+        mod_ = pow(__MODULE__, 2)
+        key = {"a": random.randint(0, mod_ - 1), "b": random.randint(0, mod_ - 1)}
+        dtext = affine_distortion(text=some_text, key=key, l=l)
+        print(dtext)
+
+    print()
 
 if __name__ == "__main__":
     main()
