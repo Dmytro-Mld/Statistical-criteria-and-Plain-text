@@ -27,6 +27,35 @@ def decode(indexes: list[int]) -> str:
 
     return result
 
+def encode_l_ary(text: str, l: int) -> list[int]:
+    if len(text) % l != 0: raise ValueError(f"Given string is invalid: the size should be divisable by l(={l}) but {len(text)} isn't divisable by {l}")
+
+    result = []
+    for i in range(0, len(text), l):
+        temp = 0
+        multiplyer = 1
+        for j in range(l):
+            temp += encode_helper[text[i + j]] * multiplyer
+            multiplyer *= __MODULE__
+        
+        result.append(temp)
+
+    return result
+
+def decode_l_ary(indexes: list[int], l: int) -> list[int]:
+    # if len(text) % l != 0: raise ValueError(f"Given string is invalid: the size should be divisable by l({l}) but {len(text)} isn't divisable by {l}")
+
+    result = ""
+    for i, ind in enumerate(indexes):
+        temp = ""
+        for j in range(l):
+            temp = temp + __UKR_ALPHA_LOWER__[ind % __MODULE__]
+            ind = ind // __MODULE__
+        
+        result += temp
+
+    return result
+
 def letters_frequency(file_path: str) -> defaultdict[int]:
     frequency = defaultdict(int)
 
