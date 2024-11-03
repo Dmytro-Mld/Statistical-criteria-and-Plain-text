@@ -136,6 +136,7 @@ def main(epsilon = pow(10, -12), precision = 12):
     file_path = "text_preparation/out_text.txt"
     
     fletters = letters_frequency(file_path=file_path)
+    print("> Letters frequency")
     for k in fletters:
         print(f"{k}: {fletters[k]:0.{precision}f}")
 
@@ -146,10 +147,9 @@ def main(epsilon = pow(10, -12), precision = 12):
     # small test for: SUM f_i ~ 1.0
     if sum < 1.0 - epsilon or sum > 1.0 + epsilon: raise ValueError(f"sum of all letters frequency should be equal to 1.0, but it is: {sum}")
 
+    print()
 
-    print("")
-
-
+    print("> Bigram frequency")
     fbigrams = bigram_frequency(file_path=file_path)
     for k in fbigrams:
         print(f"{k}: {fbigrams[k]:0.{precision}f}")
@@ -161,10 +161,10 @@ def main(epsilon = pow(10, -12), precision = 12):
     # small test for: SUM f_i ~ 1.0
     if sum < 1.0 - epsilon or sum > 1.0 + epsilon: raise ValueError(f"sum of all letters frequency should be equal to 1.0, but it is: {sum}")
 
-    print("")
+    print()
     some_text = "тахлопецьпочувавсятакимображенимщонезвернувнацежодноїувагиідалінарікавіякщобтвійтато"
-    print(some_text)
 
+    print("> Vigener distortion example")
     for i in [1, 5, 10]:
         key = [random.randint(0, __MODULE__ - 1) for _ in range(i)]
         dtext = vigener_distortion(text=some_text, key=key)
@@ -172,6 +172,7 @@ def main(epsilon = pow(10, -12), precision = 12):
     
     print()
 
+    print("> Affine distortion example")
     for l in [1, 2]:
         mod_ = pow(__MODULE__, 2)
         key = {"a": random.randint(0, mod_ - 1), "b": random.randint(0, mod_ - 1)}
@@ -180,10 +181,13 @@ def main(epsilon = pow(10, -12), precision = 12):
 
     print()
 
+    print("> Random text creation")
     print(random_uniform_text(size=100, l=1))
     print(random_uniform_text(size=100, l=2))
     print(random_nonuniform_text(size=100, l=1))
     print(random_nonuniform_text(size=100, l=2))
+
+    print()
 
 if __name__ == "__main__":
     main()
