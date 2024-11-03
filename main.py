@@ -107,6 +107,17 @@ def affine_distortion(text: str, key: dict[str: int], l: int) -> str:
     
     return decode_l_ary(indexes, l=l)
 
+def random_uniform_text(size: int, l: int) -> str:
+    size = size // l # because any l-gram gives l symbols instead of 1
+
+    res = []
+    mod_ = pow(__MODULE__, 2)
+
+    for _ in range(size):
+        res.append(random.randint(0, mod_ - 1))
+    
+    return decode_l_ary(indexes=res, l=l)
+
 def main(epsilon = pow(10, -12), precision = 12):
     file_path = "text_preparation/out_text.txt"
     
@@ -154,6 +165,9 @@ def main(epsilon = pow(10, -12), precision = 12):
         print(dtext)
 
     print()
+
+    print(random_uniform_text(size=100, l=1))
+    print(random_uniform_text(size=100, l=2))
 
 if __name__ == "__main__":
     main()
