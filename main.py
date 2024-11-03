@@ -97,7 +97,7 @@ def vigener_distortion(text: str, key: list[int]) -> str:
     
     return decode(indexes)
 
-# dict  = {"a": int, "b": int}
+# key  = {"a": int, "b": int}
 def affine_distortion(text: str, key: dict[str: int], l: int) -> str:
     mod_ = pow(__MODULE__, l)
 
