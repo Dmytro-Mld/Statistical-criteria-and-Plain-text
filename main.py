@@ -1,6 +1,7 @@
 import os
 import random
 from collections import defaultdict
+import numpy as np
 
 # ukr_alpha = "АБВГДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгдеєжзиіїйклмнопрстуфхцчшщьюя"
 __UKR_ALPHA_LOWER__ = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя"
@@ -132,6 +133,34 @@ def random_nonuniform_text(size: int, l: int) -> str:
 
     return decode_l_ary(indexes=s, l=l)
 
+def criteria_2_0(fbigrams: dict, size: int, l: int):
+    #sort_fbigrams = sorted(fbigrams.items(), key=lambda item: item[1])
+    fbrg = fbigrams
+    friquent_bigram_list = defaultdict(int)
+    bigram_list_of_text = []
+
+    #creating A_frq 
+    for i in range(500):
+        key = max(fbrg, key=fbrg.get)
+        value = fbrg.get(key)
+        friquent_bigram_list[key] = value
+        del fbrg[key]
+
+    #checking our text
+    r_text = random_uniform_text(size, l)
+    for i in range(1, len(r_text)):
+        bigram_list_of_text.append(r_text[i-1] + r_text[i])
+
+    #checking if our text bigram is in A_frq list
+    for i in range(len(bigram_list_of_text)):
+        if bigram_list_of_text[i] in friquent_bigram_list.keys():
+            continue
+        if i == len(bigram_list_of_text) - 1:
+            return "This is plaintext"
+
+    return "This text makes no sense"
+
+
 def main(epsilon = pow(10, -12), precision = 12):
     file_path = "text_preparation/out_text.txt"
     
@@ -160,7 +189,7 @@ def main(epsilon = pow(10, -12), precision = 12):
 
     # small test for: SUM f_i ~ 1.0
     if sum < 1.0 - epsilon or sum > 1.0 + epsilon: raise ValueError(f"sum of all letters frequency should be equal to 1.0, but it is: {sum}")
-
+ 
     print()
     some_text = "тахлопецьпочувавсятакимображенимщонезвернувнацежодноїувагиідалінарікавіякщобтвійтато"
 
@@ -187,7 +216,13 @@ def main(epsilon = pow(10, -12), precision = 12):
     print(random_nonuniform_text(size=100, l=1))
     print(random_nonuniform_text(size=100, l=2))
 
-    print()
+
+
+    print("> Criteria 2.0")
+    crit_2_0 = criteria_2_0(fbigrams = fbigrams, size = 100, l = 2)
+    print(crit_2_0)
+
+
 
 if __name__ == "__main__":
     main()
