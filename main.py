@@ -151,13 +151,6 @@ def criteria_2_0(fbigrams: dict, size: int, l: int):
         bigram_list_of_text.append(r_text[i] + r_text[i+1])
 
     #checking if our text bigram is in A_frq list
-    """
-    for i in range(len(bigram_list_of_text)):
-        if bigram_list_of_text[i] in friquent_bigram_list.keys():
-            continue
-        if i == len(bigram_list_of_text) - 1:
-            return "This is plaintext"
-    """
     for i in range(len(bigram_list_of_text)):
         if bigram_list_of_text[i] in friquent_bigram_list:
             continue
@@ -185,12 +178,12 @@ def criteria_2_1(fbigrams: dict, size: int, l: int):
         bigram_list_of_text.append(r_text[i] + r_text[i+1])
 
     a_af_list = []
-    #creating A_af list which consists of bigrams that are in text but not it A_frq (friquent_bigram_list)
+    #creating A_af list which consists of bigrams that are in text and in A_frq (friquent_bigram_list)
     for i in range(len(bigram_list_of_text)):
         if bigram_list_of_text[i] in friquent_bigram_list.keys():
-            continue
-        else:
             a_af_list.append(bigram_list_of_text[i])
+        else:
+            continue
     
     k_f = 300
     count = 0
@@ -263,11 +256,11 @@ def main(epsilon = pow(10, -12), precision = 12):
 
 
     print("> Criteria 2.0")
-    crit_2_0 = criteria_2_0(fbigrams = fbigrams, size = 10000, l = 2)
+    crit_2_0 = criteria_2_0(fbigrams = fbigrams, size = 1000, l = 2)
     print(crit_2_0)
 
     print("> Criteria 2.1")
-    crit_2_1 = criteria_2_1(fbigrams = fbigrams, size = 10000, l = 2)
+    crit_2_1 = criteria_2_1(fbigrams = fbigrams, size = 1000, l = 2)
     print(crit_2_1)
 
 
