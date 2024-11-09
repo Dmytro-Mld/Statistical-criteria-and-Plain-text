@@ -188,9 +188,9 @@ def criteria_2_1(fbigrams: dict, size: int, l: int):
     #creating A_af list which consists of bigrams that are in text but not it A_frq (friquent_bigram_list)
     for i in range(len(bigram_list_of_text)):
         if bigram_list_of_text[i] in friquent_bigram_list.keys():
-            continue
-        else:
             a_af_list.append(bigram_list_of_text[i])
+        else:
+            continue
     
     k_f = 300
     count = 0
