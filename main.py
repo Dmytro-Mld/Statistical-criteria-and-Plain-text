@@ -81,8 +81,8 @@ def bigram_frequency(file_path: str) -> defaultdict[int]:
         text = file.read()
         text_length = len(text)
         
-        for i in range(1, text_length):
-                frequency[text[i-1] + text[i]] += 1
+        for i in range(0, text_length, 2):
+                frequency[text[i] + text[i+1]] += 1
     
     for k in frequency:
         frequency[k] = frequency[k] / (text_length - 1)
@@ -134,13 +134,12 @@ def random_nonuniform_text(size: int, l: int) -> str:
     return decode_l_ary(indexes=s, l=l)
 
 def criteria_2_0(fbigrams: dict, size: int, l: int):
-    #sort_fbigrams = sorted(fbigrams.items(), key=lambda item: item[1])
-    fbrg = fbigrams
-    friquent_bigram_list = defaultdict(int)
+    fbrg = fbigrams.copy()
+    friquent_bigram_list = defaultdict(int) #A_frq
     bigram_list_of_text = []
 
     #creating A_frq 
-    for i in range(500):
+    for i in range(800):
         key = max(fbrg, key=fbrg.get)
         value = fbrg.get(key)
         friquent_bigram_list[key] = value
@@ -148,17 +147,62 @@ def criteria_2_0(fbigrams: dict, size: int, l: int):
 
     #checking our text
     r_text = random_uniform_text(size, l)
-    for i in range(1, len(r_text)):
-        bigram_list_of_text.append(r_text[i-1] + r_text[i])
+    for i in range(0, len(r_text), 2):
+        bigram_list_of_text.append(r_text[i] + r_text[i+1])
 
     #checking if our text bigram is in A_frq list
+    """
     for i in range(len(bigram_list_of_text)):
         if bigram_list_of_text[i] in friquent_bigram_list.keys():
             continue
         if i == len(bigram_list_of_text) - 1:
             return "This is plaintext"
+    """
+    for i in range(len(bigram_list_of_text)):
+        if bigram_list_of_text[i] in friquent_bigram_list:
+            continue
+        else:
+            return "This text makes no sense"
 
-    return "This text makes no sense"
+    return "This is plaintext"
+
+
+def criteria_2_1(fbigrams: dict, size: int, l: int):
+    fbrg = fbigrams.copy()
+    friquent_bigram_list = {}
+    bigram_list_of_text = []
+
+    #creating A_frq 
+    for i in range(800):
+        key = max(fbrg, key=fbrg.get)
+        value = fbrg.get(key)
+        friquent_bigram_list[key] = value
+        del fbrg[key]
+
+    #checking our text
+    r_text = random_uniform_text(size, l)
+    for i in range(0, len(r_text), 2):
+        bigram_list_of_text.append(r_text[i] + r_text[i+1])
+
+    a_af_list = []
+    #creating A_af list which consists of bigrams that are in text but not it A_frq (friquent_bigram_list)
+    for i in range(len(bigram_list_of_text)):
+        if bigram_list_of_text[i] in friquent_bigram_list.keys():
+            continue
+        else:
+            a_af_list.append(bigram_list_of_text[i])
+    
+    k_f = 300
+    count = 0
+    for i in range(len(a_af_list)):
+        if a_af_list[i] in friquent_bigram_list:
+            count += 1
+    if count <= k_f:
+        return "This text makes no sense"
+    else:
+        return "This is plaintext"
+
+
 
 
 def main(epsilon = pow(10, -12), precision = 12):
@@ -219,8 +263,12 @@ def main(epsilon = pow(10, -12), precision = 12):
 
 
     print("> Criteria 2.0")
-    crit_2_0 = criteria_2_0(fbigrams = fbigrams, size = 100, l = 2)
+    crit_2_0 = criteria_2_0(fbigrams = fbigrams, size = 10000, l = 2)
     print(crit_2_0)
+
+    print("> Criteria 2.1")
+    crit_2_1 = criteria_2_1(fbigrams = fbigrams, size = 10000, l = 2)
+    print(crit_2_1)
 
 
 
