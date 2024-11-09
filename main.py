@@ -85,7 +85,7 @@ def bigram_frequency(file_path: str) -> defaultdict[int]:
                 frequency[text[i] + text[i+1]] += 1
     
     for k in frequency:
-        frequency[k] = frequency[k] / (text_length - 1)
+        frequency[k] = frequency[k] / (text_length // 2)
 
     return frequency
 
