@@ -138,13 +138,13 @@ def criteria_2_0(fbigrams: dict, fletters: dict, rand_text: str, l: int):
 
     if l_size == 1:
         fbrg = fletters.copy()
-        friquent_bigram_list = defaultdict(int) #A_frq
+        friquent_bigram_dict = defaultdict(int) #A_frq
         bigram_list_of_text = []
         #creating A_frq
         for i in range(32):
             key = max(fbrg, key=fbrg.get)
             value = fbrg.get(key)
-            friquent_bigram_list[key] = value
+            friquent_bigram_dict[key] = value
             del fbrg[key]
         #checking our text
         for i in rand_text:
@@ -154,13 +154,13 @@ def criteria_2_0(fbigrams: dict, fletters: dict, rand_text: str, l: int):
                 bigram_list_of_text.append(i)
     else:
         fbrg = fbigrams.copy()
-        friquent_bigram_list = defaultdict(int) #A_frq
+        friquent_bigram_dict = defaultdict(int) #A_frq
         bigram_list_of_text = []
         #creating A_frq
         for i in range(800):
             key = max(fbrg, key=fbrg.get)
             value = fbrg.get(key)
-            friquent_bigram_list[key] = value
+            friquent_bigram_dict[key] = value
             del fbrg[key]
 
         #checking our text
@@ -169,7 +169,7 @@ def criteria_2_0(fbigrams: dict, fletters: dict, rand_text: str, l: int):
 
     #checking if our text bigram is in A_frq list
     for i in bigram_list_of_text:
-        if i in friquent_bigram_list:
+        if i in friquent_bigram_dict:
             continue
         else:
             return "This text makes no sense"
@@ -180,14 +180,14 @@ def criteria_2_0(fbigrams: dict, fletters: dict, rand_text: str, l: int):
 def criteria_2_1(fbigrams: dict, fletters: dict, rand_text: str, l: int):
     l_size = l
     fbrg = fbigrams.copy()
-    friquent_bigram_list = {}
+    friquent_bigram_dict = {}
     bigram_list_of_text = []
 
     #creating A_frq 
     for i in range(800):
         key = max(fbrg, key=fbrg.get)
         value = fbrg.get(key)
-        friquent_bigram_list[key] = value
+        friquent_bigram_dict[key] = value
         del fbrg[key]
 
     #checking our text
@@ -195,9 +195,9 @@ def criteria_2_1(fbigrams: dict, fletters: dict, rand_text: str, l: int):
         bigram_list_of_text.append(rand_text[i] + rand_text[i+1])
 
     a_af_list = []
-    #creating A_af list which consists of bigrams that are in text and in A_frq (friquent_bigram_list)
+    #creating A_af list which consists of bigrams that are in text and in A_frq (friquent_bigram_dict)
     for i in range(len(bigram_list_of_text)):
-        if bigram_list_of_text[i] in friquent_bigram_list.keys():
+        if bigram_list_of_text[i] in friquent_bigram_dict.keys():
             a_af_list.append(bigram_list_of_text[i])
         else:
             continue
@@ -205,7 +205,7 @@ def criteria_2_1(fbigrams: dict, fletters: dict, rand_text: str, l: int):
     k_f = 300
     count = 0
     for i in range(len(a_af_list)):
-        if a_af_list[i] in friquent_bigram_list:
+        if a_af_list[i] in friquent_bigram_dict:
             count += 1
     if count <= k_f:
         return "This text makes no sense"
@@ -215,13 +215,13 @@ def criteria_2_1(fbigrams: dict, fletters: dict, rand_text: str, l: int):
 def criteria_2_2(fbigrams: dict, fletters: dict, rand_text: str, l: int):
     l_size = l
     fbrg = fbigrams.copy()
-    friquent_bigram_list = {}
+    friquent_bigram_dict = {}
 
     #creating A_frq 
     for i in range(800):
         key = max(fbrg, key=fbrg.get)
         value = fbrg.get(key)
-        friquent_bigram_list[key] = value
+        friquent_bigram_dict[key] = value
         del fbrg[key]
 
     #checking our text
@@ -239,12 +239,12 @@ def criteria_2_2(fbigrams: dict, fletters: dict, rand_text: str, l: int):
     count = 0
 
     for key in frequency:
-        if key in friquent_bigram_list:
-            if frequency[key] < friquent_bigram_list[key]:
+        if key in friquent_bigram_dict:
+            if frequency[key] < friquent_bigram_dict[key]:
                 return "This text makes no sense"
             else:
                 continue
-        if key not in friquent_bigram_list:
+        if key not in friquent_bigram_dict:
             count += 1
             
     return "This is plaintext"
@@ -252,13 +252,13 @@ def criteria_2_2(fbigrams: dict, fletters: dict, rand_text: str, l: int):
 def criteria_2_3(fbigrams: dict, fletters: dict, rand_text: str, l: int):
     l_size = l    
     fbrg = fbigrams.copy()
-    friquent_bigram_list = {}
+    friquent_bigram_dict = {}
 
     #creating A_frq 
     for i in range(800):
         key = max(fbrg, key=fbrg.get)
         value = fbrg.get(key)
-        friquent_bigram_list[key] = value
+        friquent_bigram_dict[key] = value
         del fbrg[key]
 
     #creating a dictionary with bigrams from our bigrams text and its frequency
@@ -276,17 +276,66 @@ def criteria_2_3(fbigrams: dict, fletters: dict, rand_text: str, l: int):
     #creating frequency_F array:
     frequency_F = frequency.copy()
 
-    frequency_F = {key: frequency[key] for key in frequency if key in friquent_bigram_list}
+    frequency_F = {key: frequency[key] for key in frequency if key in friquent_bigram_dict}
 
     frequency_F_sum = sum(frequency_F.values())
-    frequency_K_sum = sum(friquent_bigram_list.values())
+    frequency_K_sum = sum(friquent_bigram_dict.values())
 
     if frequency_F_sum < frequency_K_sum:
         return "This text makes no sense"
     else:
         return "This is plaintext"
+    
+def calculate_index_of_coincidence(cx: dict, L: int) -> float:
+    # Рахуємо чисельник: суму cx * (cx - 1) для всіх cx у словнику
+    numerator = sum(count * (count - 1) for count in cx.values())
+    
+    # Рахуємо знаменник
+    denominator = L * (L - 1)
+    
+    # Розраховуємо індекс відповідності
+    I_l = numerator / denominator
+    return I_l
 
+def criteria_coincidence(fbigrams: dict, fletters: dict, rand_text: str, l: int):
+    fbgr = fbigrams.copy()
+    l_size = l
+    kI = 0.03
 
+    if l_size == 1:
+        #checking our text
+        frequency = defaultdict(int)
+        text_length = 0
+        for line in rand_text:
+            text_length += len(line)
+            for c in line:
+                frequency[c] += 1
+        for k in frequency:
+            frequency[k] = frequency[k] / text_length
+    else:
+        #checking our text
+        frequency = defaultdict(int)
+
+        text_length = 0
+        text_length = len(rand_text)
+            
+        for i in range(0, text_length, 2):
+            frequency[rand_text[i] + rand_text[i+1]] += 1
+        
+        for k in frequency:
+            frequency[k] = frequency[k] / (text_length // 2)
+
+    index = calculate_index_of_coincidence(fbgr, len(rand_text))
+    index_hatch = calculate_index_of_coincidence(frequency, len(rand_text))
+    
+    res = abs(index - index_hatch)
+
+    if res > kI:
+        return "This text makes no sense"
+    else:
+        return "This is plaintext"
+
+    
 
 
 def main(epsilon = pow(10, -12), precision = 12):
@@ -346,7 +395,7 @@ def main(epsilon = pow(10, -12), precision = 12):
 
     l = 2
 
-    rand_text_1 = random_uniform_text(size=1000, l=2)
+    rand_text_1 = random_uniform_text(size=100, l=2)
     rand_text_2 = random_nonuniform_text(size=100, l=2)
 
     print("> Criteria 2.0")
@@ -364,6 +413,10 @@ def main(epsilon = pow(10, -12), precision = 12):
     print("> Criteria 2.3")
     crit_2_3 = criteria_2_3(fbigrams = fbigrams, fletters = fletters, rand_text = rand_text_1, l = l)
     print(crit_2_3)
+
+    print("> Criteria 4.0 Index of Coincidence")
+    crit_4_0 = criteria_coincidence(fbigrams = fbigrams, fletters = fletters, rand_text = rand_text_1, l = l)
+    print(crit_4_0)
 
 
 
