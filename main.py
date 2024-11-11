@@ -335,7 +335,38 @@ def criteria_coincidence(fbigrams: dict, fletters: dict, rand_text: str, l: int)
     else:
         return "This is plaintext"
 
+
+def criteria_empty_boxes(fbigrams: dict, fletters: dict, rand_text: str, l: int):
+    fbgr = fbigrams.copy()
+    B_prh = defaultdict(int)
+    j = 100
+    f_empt = 0
+    k_empt = 23
+
+    for i in range(j):
+        key = min(fbgr, key=fbgr.get)
+        value = 0
+        #value = fbgr.get(key)
+        B_prh[key] = value
+        del fbgr[key]
     
+
+    for key in B_prh:
+        if key in rand_text:
+            B_prh[key] += 1
+        else:
+            continue
+
+    for key in B_prh:
+        if B_prh[key] == 0:
+            f_empt += 1
+
+    if f_empt <= k_empt:
+        return "This text makes no sense"
+    else:
+        return "This is plaintext"
+
+
 
 
 def main(epsilon = pow(10, -12), precision = 12):
@@ -417,6 +448,11 @@ def main(epsilon = pow(10, -12), precision = 12):
     print("> Criteria 4.0 Index of Coincidence")
     crit_4_0 = criteria_coincidence(fbigrams = fbigrams, fletters = fletters, rand_text = rand_text_1, l = l)
     print(crit_4_0)
+
+    print("> Criteria 5.0 Empty boxes criteria")
+    crit_5_0 = criteria_empty_boxes(fbigrams = fbigrams, fletters = fletters, rand_text = rand_text_1, l = l)
+    print(crit_5_0)
+ 
 
 
 
