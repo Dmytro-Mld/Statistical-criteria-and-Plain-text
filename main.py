@@ -388,6 +388,23 @@ def criteria_structural(Z: str, Y: str):
 
     return z_text
 
+def get_plaintext_parts(file_path, length):
+    with open(file_path, 'rt', encoding="utf-8") as file:
+        content = file.read()
+
+    text_len = len(content)
+
+    text_point = random.randint(0, text_len)
+
+    plain_text = content[text_point:(text_point+length)]
+
+    leftover = (text_point+length)%text_len
+
+    if text_len < text_point+length:
+        plain_text = plain_text + content[:leftover]
+
+
+    return plain_text
 
 
 
@@ -464,6 +481,12 @@ def main(epsilon = pow(10, -12), precision = 12):
         rand_txt = random_uniform_text(size, l)
     elif u == 2:
         rand_txt = random_nonuniform_text(size, l)
+
+    #print("Random Plain Text")
+    for i in range (100):
+        rand_plain_text = get_plaintext_parts(file_path=file_path, length = 20000)
+        print(rand_plain_text)
+        print(len(rand_plain_text))
 
     print("> Criteria 2.0")
     crit_2_0 = criteria_2_0(fbigrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
