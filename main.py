@@ -2,6 +2,7 @@ import os
 import random
 from collections import defaultdict
 import numpy as np
+import lzma
 
 # ukr_alpha = "АБВГДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгдеєжзиіїйклмнопрстуфхцчшщьюя"
 __UKR_ALPHA_LOWER__ = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя"
@@ -137,39 +138,35 @@ def criteria_2_0(fbigrams: dict, fletters: dict, rand_text: str, l: int):
     l_size = l
 
     if l_size == 1:
-        fbrg = fletters.copy()
-        friquent_bigram_dict = defaultdict(int) #A_frq
-        bigram_list_of_text = []
-        #creating A_frq
-        for i in range(32):
-            key = max(fbrg, key=fbrg.get)
-            value = fbrg.get(key)
-            friquent_bigram_dict[key] = value
-            del fbrg[key]
-        #checking our text
-        for i in rand_text:
-            if i in bigram_list_of_text:
-                continue
-            else:
-                bigram_list_of_text.append(i)
+        flrg = fletters.copy()
     else:
-        fbrg = fbigrams.copy()
-        friquent_bigram_dict = defaultdict(int) #A_frq
-        bigram_list_of_text = []
-        #creating A_frq
-        for i in range(800):
-            key = max(fbrg, key=fbrg.get)
-            value = fbrg.get(key)
-            friquent_bigram_dict[key] = value
-            del fbrg[key]
+        flrg = fbigrams.copy()
 
-        #checking our text
+    param = round(len(flrg) * 0.1)
+
+    friquent_lgram_dict = defaultdict(int) #A_frq
+    lgram_list_of_text = []
+    #creating A_frq
+    for i in range(param):
+        key = max(flrg, key=flrg.get)
+        value = flrg.get(key)
+        friquent_lgram_dict[key] = value
+        del flrg[key]
+
+    #creating lgrams list of our text
+    if l_size == 1:
+        for i in rand_text:
+                if i in lgram_list_of_text:
+                    continue
+                else:
+                    lgram_list_of_text.append(i)
+    else:
         for i in range(0, len(rand_text), 2):
-            bigram_list_of_text.append(rand_text[i] + rand_text[i+1])
+            lgram_list_of_text.append(rand_text[i] + rand_text[i+1])
 
     #checking if our text bigram is in A_frq list
-    for i in bigram_list_of_text:
-        if i in friquent_bigram_dict:
+    for i in friquent_lgram_dict:
+        if i in lgram_list_of_text:
             continue
         else:
             return "This text makes no sense"
@@ -367,6 +364,31 @@ def criteria_empty_boxes(fbigrams: dict, fletters: dict, rand_text: str, l: int)
         return "This is plaintext"
 
 
+def criteria_structural(Z: str, Y: str):
+    z_text = Z
+    y_text = Y
+
+    z_text_bytes = z_text.encode('utf-8')
+    y_text_bytes = y_text.encode('utf-8')
+
+    z_compressed_data = lzma.compress(z_text_bytes)
+    y_compressed_data = lzma.compress(y_text_bytes)
+
+    print("Стиснені дані:", z_compressed_data)
+    print("Стиснені дані:", y_compressed_data)
+
+    z_decompressed_data = lzma.decompress(z_compressed_data)
+    y_decompressed_data = lzma.decompress(y_compressed_data)
+
+    z_original_text = z_decompressed_data.decode('utf-8')
+    y_original_text = y_decompressed_data.decode('utf-8')
+
+    print("Оригінальний текст:", z_original_text)
+    print("Оригінальний текст:", y_original_text)
+
+    return z_text
+
+
 
 
 def main(epsilon = pow(10, -12), precision = 12):
@@ -424,34 +446,52 @@ def main(epsilon = pow(10, -12), precision = 12):
     print(random_nonuniform_text(size=100, l=1))
     print(random_nonuniform_text(size=100, l=2))
 
-    l = 2
+    print("\n")
 
-    rand_text_1 = random_uniform_text(size=100, l=2)
-    rand_text_2 = random_nonuniform_text(size=100, l=2)
+    """l = int(input("Enter l-gram size: "))
+    print(f"l: {l}")
+    print("Enter random text parameters: ")
+    u = int(input("Enter 1 for uniform or 2 for nonuniform: "))
+    print(f"u: {u}")
+    size = int(input("Enter random text size: "))
+    print(f"size: {size}")"""
+
+    l = 2
+    u = 1
+    size = 1000
+
+    if u == 1:
+        rand_txt = random_uniform_text(size, l)
+    elif u == 2:
+        rand_txt = random_nonuniform_text(size, l)
 
     print("> Criteria 2.0")
-    crit_2_0 = criteria_2_0(fbigrams = fbigrams, fletters = fletters, rand_text = rand_text_1, l = l)
+    crit_2_0 = criteria_2_0(fbigrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
     print(crit_2_0)
 
     print("> Criteria 2.1")
-    crit_2_1 = criteria_2_1(fbigrams = fbigrams, fletters = fletters, rand_text = rand_text_1, l = l)
+    crit_2_1 = criteria_2_1(fbigrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
     print(crit_2_1)
 
     print("> Criteria 2.2")
-    crit_2_2 = criteria_2_2(fbigrams = fbigrams, fletters = fletters, rand_text = rand_text_1, l = l)
+    crit_2_2 = criteria_2_2(fbigrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
     print(crit_2_2)
 
     print("> Criteria 2.3")
-    crit_2_3 = criteria_2_3(fbigrams = fbigrams, fletters = fletters, rand_text = rand_text_1, l = l)
+    crit_2_3 = criteria_2_3(fbigrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
     print(crit_2_3)
 
     print("> Criteria 4.0 Index of Coincidence")
-    crit_4_0 = criteria_coincidence(fbigrams = fbigrams, fletters = fletters, rand_text = rand_text_1, l = l)
+    crit_4_0 = criteria_coincidence(fbigrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
     print(crit_4_0)
 
     print("> Criteria 5.0 Empty boxes criteria")
-    crit_5_0 = criteria_empty_boxes(fbigrams = fbigrams, fletters = fletters, rand_text = rand_text_1, l = l)
+    crit_5_0 = criteria_empty_boxes(fbigrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
     print(crit_5_0)
+
+    print("> Criteria Structural")
+    crit_struct = criteria_structural(Z = rand_txt, Y = dtext)
+    print(crit_struct)
  
 
 
