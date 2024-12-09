@@ -157,7 +157,7 @@ def criteria_2_0(fbigrams: dict, fletters: dict, rand_text: str, l: int):
             if (rand_text[i] + rand_text[i+1]) not in lgram_list_of_text:
                 lgram_list_of_text.append(rand_text[i] + rand_text[i+1])
 
-    param = round(len(lgram_list_of_text) * 0.1)
+    param = round(len(lgram_list_of_text) * 0.2)
 
     #creating A_frq
     for i in range(param):
@@ -338,12 +338,17 @@ def calculate_index_of_coincidence(cx: dict, L: int) -> float:
     return I_l
 
 def criteria_coincidence(fbigrams: dict, fletters: dict, rand_text: str, l: int):
-    fbgr = fbigrams.copy()
     l_size = l
+
+    if l_size == 1:
+        flgr = fletters.copy()
+    else:
+        flgr = fbigrams.copy()
+
     kI = 0.03
 
     if l_size == 1:
-        #checking our text
+        #counting frequency of monograms
         frequency = defaultdict(int)
         text_length = 0
         for line in rand_text:
@@ -353,7 +358,7 @@ def criteria_coincidence(fbigrams: dict, fletters: dict, rand_text: str, l: int)
         for k in frequency:
             frequency[k] = frequency[k] / text_length
     else:
-        #checking our text
+        #counting frequency of bigrams
         frequency = defaultdict(int)
 
         text_length = 0
@@ -365,7 +370,7 @@ def criteria_coincidence(fbigrams: dict, fletters: dict, rand_text: str, l: int)
         for k in frequency:
             frequency[k] = frequency[k] / (text_length // 2)
 
-    index = calculate_index_of_coincidence(fbgr, len(rand_text))
+    index = calculate_index_of_coincidence(flgr, len(rand_text))
     index_hatch = calculate_index_of_coincidence(frequency, len(rand_text))
     
     res = abs(index - index_hatch)
@@ -377,18 +382,27 @@ def criteria_coincidence(fbigrams: dict, fletters: dict, rand_text: str, l: int)
 
 
 def criteria_empty_boxes(fbigrams: dict, fletters: dict, rand_text: str, l: int):
-    fbgr = fbigrams.copy()
+    l_size = l
+    if l_size == 1:
+        flgr = fletters.copy()
+    else:
+        flgr = fbigrams.copy()
     B_prh = defaultdict(int)
-    j = 100
+
+    if l_size == 1:
+        j = 10
+    else:
+        j = 100
+
     f_empt = 0
     k_empt = 23
 
     for i in range(j):
-        key = min(fbgr, key=fbgr.get)
+        key = min(flgr, key=flgr.get)
         value = 0
         #value = fbgr.get(key)
         B_prh[key] = value
-        del fbgr[key]
+        del flgr[key]
     
 
     for key in B_prh:
@@ -407,29 +421,38 @@ def criteria_empty_boxes(fbigrams: dict, fletters: dict, rand_text: str, l: int)
         return "This is plaintext"
 
 
-def criteria_structural(Z: str, Y: str):
-    z_text = Z
+def criteria_structural(Y: str):
+
     y_text = Y
 
-    z_text_bytes = z_text.encode('utf-8')
     y_text_bytes = y_text.encode('utf-8')
 
-    z_compressed_data = lzma.compress(z_text_bytes)
     y_compressed_data = lzma.compress(y_text_bytes)
 
-    print("Стиснені дані:", z_compressed_data)
-    print("Стиснені дані:", y_compressed_data)
+    original_length = len(y_text_bytes)
+    compressed_length = len(y_compressed_data)
 
-    z_decompressed_data = lzma.decompress(z_compressed_data)
+    func = 26.15279 + (213545600 - 26.15279)/(1 + pow((original_length/9.784648e-8), 0.6955944))
+
+    res = (compressed_length / original_length) * 100
+
+    if res <= func:
+        return "This is plaintext"
+    else:
+        return "This text makes no sense"
+    """
+    #print("Стиснені дані:", y_compressed_data, "Розмір тексту:", y_length)
+
+    print("Розмір тексту:", y_length)
+
     y_decompressed_data = lzma.decompress(y_compressed_data)
 
-    z_original_text = z_decompressed_data.decode('utf-8')
     y_original_text = y_decompressed_data.decode('utf-8')
 
-    print("Оригінальний текст:", z_original_text)
     print("Оригінальний текст:", y_original_text)
 
-    return z_text
+    return y_text
+    """
 
 def get_plaintext_parts(file_path, length):
     with open(file_path, 'rt', encoding="utf-8") as file:
@@ -516,27 +539,30 @@ def main(epsilon = pow(10, -12), precision = 12):
     size = int(input("Enter random text size: "))
     print(f"size: {size}")"""
 
-    l = 2
+    l = 1
     u = 1
-    size = 10000
+    size = 10
 
     if u == 1:
         rand_txt = random_uniform_text(size, l)
     elif u == 2:
         rand_txt = random_nonuniform_text(size, l)
 
-    #print("Random Plain Text")
-    """
-    for i in range (100):
-        rand_plain_text = get_plaintext_parts(file_path=file_path, length = 20000)
-        print(rand_plain_text)
-        print(len(rand_plain_text))
-    
-    for i in range(100):
+    res_p = 0
+    res_n = 0
+
+    for i in range(1000):
         rand_plain_text = get_plaintext_parts(file_path=file_path, length = 10000)
-        crit_2_0 = criteria_2_3(fbigrams = fbigrams, fletters = fletters, rand_text = rand_plain_text, l = l)
-        print(crit_2_0)
-    """
+        key = [random.randint(0, __MODULE__ - 1) for _ in range(5)]
+        dtext = vigener_distortion(text=rand_plain_text, key=key)
+        crit_2_0 = criteria_structural(Y = dtext)
+        if crit_2_0 == "This is plaintext":
+            res_p += 1
+        else:
+            res_n += 1
+    print("criteria_structural for 10000")
+    print(f"Positive: {res_p / 10}%")
+
     rand_plain_text = get_plaintext_parts(file_path=file_path, length = 1000)
 
 
@@ -557,11 +583,11 @@ def main(epsilon = pow(10, -12), precision = 12):
     print(crit_2_3)
 
     print("> Criteria 4.0 Index of Coincidence")
-    crit_4_0 = criteria_coincidence(fbigrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
+    crit_4_0 = criteria_coincidence(flgrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
     print(crit_4_0)
 
     print("> Criteria 5.0 Empty boxes criteria")
-    crit_5_0 = criteria_empty_boxes(fbigrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
+    crit_5_0 = criteria_empty_boxes(flgrams = fbigrams, fletters = fletters, rand_text = rand_txt, l = l)
     print(crit_5_0)
 
     print("> Criteria Structural")
